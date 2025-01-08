@@ -24,7 +24,61 @@ exports.get = functions.https.onRequest(async(request, response) => {
    response.send(result);
 });
 
-exports.post = functions.https.onRequest((request, response) => {
+exports.post = functions.https.onRequest(async(request, response) => {
    //functions.logger.info("Hello logs!", {structuredData: true});
+   const body = request.body
+   const type = body.type
+   
+   
+   if (type == 'personILike'){
+      const myId = body.myId
+      const idOfPersonILike = body.idOfPersonILike
+      await firestore.collection('users').doc(idOfPersonILike).collection("theyLikeMe").doc(myId).set(
+         {
+            uId: myId,
+            docReference: firestore.collection('users').doc(myId)
+
+         },{ merge: true})
+         response.send("Succesfull")
+   }
+
+   if (type == 'iDontLikeYou'){
+      const myId = body.myId
+      const idOfPersonIDontLike = body.idOfPersonIDontLike
+      await firestore.collection('users').doc(myId).collection("theyLikeMe").doc(idOfPersonIDontLike).delete()
+      response.send ("Successfully Deleted")
+   }
+
+   if (type == 'weLikeEachOther'){
+      const myId = body.myId
+      const idOfPersonILike = body.idOfPersonILike
+
+      //I prepare the 2 objects
+
+      //Other Person's Object
+      const otherPersonObject = {
+         uId: idOfPersonILike,
+         docReference: firestore.collection('users').doc(idOfPersonILike)
+      }
+
+      //My Object
+      const myObject = {
+         uId: idOfPersonILike,
+         docReference: firestore.collection('users').doc(idOfPersonILike)
+      }
+
+      // 2 Inserts in "weLikeEachOther" subcollection
+      await firestore.collection('users').doc(idOfPersonILike).collection("weLikeEachOther").doc(myId).set( myObject,{ merge: true})
+      await firestore.collection('users').doc(myId).collection("weLikeEachOther").doc(idOfPersonILike).set( otherPersonObject,{ merge: true})
+
+      //Delete the document from my subcollection of "theyLikeME"
+      await firestore.collection('users').doc(myId).collection("theyLikeMe").doc(idOfPersonILike).delete()
+      response.send("We like each other successfully done")
+   }
+
+
+
+
+
     response.send("Hello I am a POST!");
  });

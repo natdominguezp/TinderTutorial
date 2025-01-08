@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "nataliatindertutorial",
-    "TinderTutorias": "nataliatindertutorial"
+    "default": "nataliatindertutorial"
   },
   "targets": {},
   "etags": {}
