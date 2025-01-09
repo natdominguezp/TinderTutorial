@@ -63,8 +63,8 @@ exports.post = functions.https.onRequest(async(request, response) => {
 
       //My Object
       const myObject = {
-         uId: idOfPersonILike,
-         docReference: firestore.collection('users').doc(idOfPersonILike)
+         uId: myId,
+         docReference: firestore.collection('users').doc(myId)
       }
 
       // 2 Inserts in "weLikeEachOther" subcollection
