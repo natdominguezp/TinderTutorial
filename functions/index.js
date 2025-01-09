@@ -75,20 +75,20 @@ exports.post = functions.https.onRequest(async(request, response) => {
       await firestore.collection('users').doc(myId).collection("theyLikeMe").doc(idOfPersonILike).delete()
 
       //Create chat document in the chat collection
-      const idOfDocument = generateChatID(myId,idOfPersonILike)
+      const idOfDocument = generateChatId(myId,idOfPersonILike)
 
       await firestore.collection('chats').doc(idOfDocument).set({
          idsConcatenated: idOfDocument,
          arrayOfPeopleInConversation: [myId,idOfPersonILike]
-      },{merege:true})
+      },{merge:true})
 
       response.send("We like each other successfully done")
    }
     response.send("Hello I am a POST!");
  });
 
- const generateChatId = (id1,id2) => {
+ const generateChatId = (id1,id2) =>{
    const array = [id1,id2]
-   array.sort();
-   return array.join('-')
+   array.sort()
+   return `${array[0]}-${array[1]}`
  }
