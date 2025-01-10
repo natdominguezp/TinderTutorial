@@ -84,6 +84,33 @@ exports.post = functions.https.onRequest(async(request, response) => {
 
       response.send("We like each other successfully done")
    }
+
+   if (type=='breackMatch'){
+      //get the data passed through the API call 
+      const myId = body.myId
+      const idOfPersonIDontLike = body.idOfPersonIDontLike
+
+      //Delete all the chat
+      const idOfConversation = generateChatId(myId,idOfPersonIDontLike)
+      const listMessageDocuments = await firestore.collection('chats').doc(idOfConversation).collection('messages').listDocuments()
+      listMessageDocuments.forEach((eadhDoc)=>{
+         eadhDoc.delete()
+      })
+
+      //Delete the chat document 
+      await firestore.collection('chats').doc(idOfConversation).delete()
+
+      //Delete the user from the "weLikeEachOther" subcollection in both places, in mine, and in the other person's subcollection
+      const path1= `users/${myId}/weLikeEachOther/${idOfPersonIDontLike}`
+      const path2= `users/${idOfPersonIDontLike}/weLikeEachOther/${myId}`
+
+      //Perform the delete operations
+      await firestore.doc(path1).delete()
+      await firestore.doc(path2).delete()
+
+      response.send('Deletion successfull')
+   }
+
     response.send("Hello I am a POST!");
  });
 
